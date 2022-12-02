@@ -10,7 +10,7 @@ Elixir cheatsheet: https://devhints.io/elixir#enum
 		- code formatting (`mix format`)
 - Elixir built-in libraries etc:
 	- ExUnit - unit-testing framework
-	- OTP (Open Telecom Platform) - Erlang built-in set of powerful libraries. Examples: supervision trees, event managers
+	- OTP (Open Telecom Platform) - A set of powerful libraries and tools inherited from Erlang
 
 The usual way to refer to specific function is `<function_name>/<argument_count>`. For example `-/2` refers to `Kernel.-` function that takes `2` arguments (has an arity of 2).
 

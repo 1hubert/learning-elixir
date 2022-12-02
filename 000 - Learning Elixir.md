@@ -1,3 +1,5 @@
+Elixir cheatsheet: https://devhints.io/elixir#enum
+
 - Elixir built-in executables:
 	- elixir
 	- elixirc

@@ -1,5 +1,3 @@
-Elixir cheatsheet: https://devhints.io/elixir#enum
-
 - Elixir built-in executables:
 	- elixir
 	- elixirc
@@ -10,7 +8,7 @@ Elixir cheatsheet: https://devhints.io/elixir#enum
 		- code formatting (`mix format`)
 - Elixir built-in libraries etc:
 	- ExUnit - unit-testing framework
-	- OTP (Open Telecom Platform) - A set of powerful libraries and tools inherited from Erlang
+	- OTP (Open Telecom Platform) - Erlang built-in set of powerful libraries. Examples: supervision trees, event managers
 
 The usual way to refer to specific function is `<function_name>/<argument_count>`. For example `-/2` refers to `Kernel.-` function that takes `2` arguments (has an arity of 2).
 
@@ -90,10 +88,12 @@ $ mix help <task>
 
 ## Strings
 - String interpolation (like f-strings in Python): `"hello #{variable1}"`
-- Get the number of bytes in a string: `byte_size("hellö")`. That won't always be equivalent to the length of the string though.
-- Get length of a string: `Get.length("hellö")`
+- Get the number of bytes in a string: `byte_size("hellö")`. That won't always be equivalent to the length of the string.
+- Get length of a string: `String.length("hellö")`
 - `String.upcase("example")` returns `"EXAMPLE"`
 - Single quotes are charlists (not strings), double quotes are strings.
+- `<<97>>` returns `"a"`
+- `Enum.map(?a..?z, fn x -> <<x>> end)` returns  all lowercase letters.
 
 ## Functions
 - Define an anonymous functions: `add = fn a, b -> a + b end`
@@ -118,7 +118,7 @@ iex> [1, 2] ++ [5, 6]
 iex> [1, true, 2, false, 3, true] -- [true, false]
 [1, 2, 3, true]
 ```
-- List operators never modify the existing list. They simply return a new list. We say that Elixir data structures are *immutable*. It leads to clearer code. You can freely pass the data.
+	- List operators never modify the existing list. They simply return a new list. We say that Elixir data structures are *immutable*. It leads to clearer code. You can freely pass the data.
 - We call the first element of the list "head of the list" and the remainder "tail of the list". They can be retrieved with the functions `hd/1`, `tl/1`.
 - The performance of list concatenation depends on the left-hand list. Prepending (`[0] ++ list`) is faster than appending (`list ++ [0]`), but for short lists it doesn't make much difference.
 - `[head | tail]` format can be used for pattern matching as well as prepending items to a list:
@@ -336,3 +336,62 @@ iex> |> List.flatten()
 ## Script files
 - `.exs` extension
 - To run a script file use `elixir example.exs`. The script will be compiled and loaded into memory, but no `.beam` file will be saved.
+
+## Booleans
+- Truthy and falsy:
+	In Elixir, all datatypes evaluate to a truthy or falsy value when they are encountered in a boolean context (like an if expression). All data is considered truthy except for `false` and `nil`. In particular, empty strings, the integer 0, and empty lists are all considered truthy in Elixir.
+
+## Structs
+- Structs are special maps with a defined set of keys and default values.
+- A struct must be defined within a module, which it takes its name from.
+- It is common for a struct to be the only thing defined within a module.
+- To define a struct we use `defstruct` along with a keyword of fields and default values:
+```
+defmodule User do
+  defstruct [:name, :age]
+end
+```
+
+## The `alias` keyword
+- Allows you to set up aliases for any given module name.
+- Imagine a module uses a specialized list implemented in `Math.List`. The alias directive allows referring to `Math.List` just as `List` within the module definition:
+```
+defmodule Stats do
+  alias Math.List, as: List
+  # In the remaining module definition List expands to Math.List.
+end
+```
+
+## The `import` keyword
+- Imports all functions from a specified module. That way we don't have to write their full name everytime. The following example illustrates importing custom `Math` module and using `Math.sum/1` without specifying source module.
+```
+defmodule ImportExample do
+	import Math
+
+	def import_sum(num1, num2) do
+		sum(num1, num2)
+	end
+end
+```
+- In the example above, replace `import Math` with `import Math, only: [sum: 2]` to explicitly import just the `Math.sum` function with arity of 2.
+- Similarly, use `except` to import everything except specified functions.
+
+## The `IO` module
+- For printing strings use `IO.puts/1` or `IO.write/1` (no newline at the end). 
+- For general printing use `IO.inspect/1`. It prints the value and returns it unchanged. 
+- To get a value from standard input use `IO.gets/1`.
+
+## Keyword lists
+- Keywords lists are a key-value data structure.
+- Keyword lists are lists of `{key, value}` tuples, where every `key` must be an atom.
+- Shorter syntax: `[month: "April", day: 22]`
+- `[month: "April"] == [{:month, "April"}]`
+- The best way to access a keyword list element is by `keyword_list[:atom]` syntax.
+
+## The `with` keyword
+- You can gain the functionality of `Ecto.Multi` in which you give a name to each part of the transaction by the following:
+![[Pasted image 20230103235009.png]]
+
+## Processes
+- PID means Process ID
+- IEx is a process. If you send a message to anothe process from IEx, it will send the PID of the IEx process too, so that the other process knows where to send a return message.
